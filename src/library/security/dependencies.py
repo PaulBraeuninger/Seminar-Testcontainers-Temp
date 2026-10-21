@@ -15,20 +15,19 @@
 
 """Factory-Funktionen für Dependency Injection."""
 
+from functools import cache
+
 from library.security.token_service import TokenService
 from library.security.user_service import UserService
 
-_token_service = TokenService()  # Singleton-Objekt
 
-
+@cache
 def get_token_service() -> TokenService:
-    """Factory-Funktion für TokenService."""
-    return _token_service
+    """Create the singleton TokenService on its first use."""
+    return TokenService()
 
 
-_user_service = UserService()  # Singleton-Objekt
-
-
+@cache
 def get_user_service() -> UserService:
-    """Factory-Funktion für UserService."""
-    return _user_service
+    """Create the singleton UserService on its first use."""
+    return UserService()

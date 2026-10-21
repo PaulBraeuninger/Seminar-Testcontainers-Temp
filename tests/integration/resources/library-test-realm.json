@@ -1,0 +1,49 @@
+{
+  "realm": "library-test",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "roles": {
+    "client": {
+      "python-client": [
+        {"name": "admin"},
+        {"name": "patient"}
+      ]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "python-client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "test-client-secret",
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": false,
+      "fullScopeAllowed": true,
+      "defaultClientScopes": ["basic", "roles", "profile", "email"]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@example.com",
+      "emailVerified": true,
+      "firstName": "Test",
+      "lastName": "Admin",
+      "credentials": [{"type": "password", "value": "test-password", "temporary": false}],
+      "clientRoles": {"python-client": ["admin"]}
+    },
+    {
+      "username": "member",
+      "enabled": true,
+      "email": "member@example.com",
+      "emailVerified": true,
+      "firstName": "Test",
+      "lastName": "Member",
+      "credentials": [{"type": "password", "value": "test-password", "temporary": false}],
+      "clientRoles": {"python-client": ["patient"]}
+    }
+  ]
+}
