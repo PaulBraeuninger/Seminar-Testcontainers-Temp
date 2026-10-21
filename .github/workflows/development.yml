@@ -26,8 +26,7 @@ jobs:
         run: uv run ruff check src tests
 
       - name: Analyze code with ty
-        run: uv run ty check src tests/integration
-      #FIXME: Change for tests only, when test cases for unit tests are added
+        run: uv run ty check src tests/integration tests/testcontainers
 
       # - name: Test code with pytest
       #   run: uv run pytest tests

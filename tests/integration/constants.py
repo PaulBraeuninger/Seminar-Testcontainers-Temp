@@ -48,6 +48,6 @@ PASSWORD_ADMIN: Final = "p"  # noqa: S105  # NOSONAR
 
 TIMEOUT: Final = 30
 
-CERTIFICATE: Final = str(Path("tests") / "integration" / "certificate.crt")
+CERTIFICATE: Final = str(Path(__file__).with_name("certificate.crt"))
 
 CTX = create_default_context(cafile=CERTIFICATE)

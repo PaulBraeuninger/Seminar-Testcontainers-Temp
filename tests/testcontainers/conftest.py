@@ -1,4 +1,4 @@
-"""Shared fixtures for integration tests."""
+"""Shared fixtures for the Testcontainers tests."""
 
 from collections.abc import Iterator
 from pathlib import Path

@@ -87,8 +87,8 @@ lint = [
 
 [tool.pytest.ini_options]
 minversion = "8.4.1"
-pythonpath = ["src"]
-testpaths = ["tests/integration"]
+pythonpath = ["src", "tests/integration"]
+testpaths = ["tests/integration", "tests/testcontainers"]
 addopts = "--html=report.html --cov --cov-report=html"
 markers = [
     "rest: REST-Schnittstelle",
@@ -169,7 +169,7 @@ include = ["src/library/service/*"]
 
 [tool.ty.environment]
 python = "./.venv"
-root = ["./src", "./tests/integration"]
+root = ["./src", "./tests/integration", "./tests/testcontainers"]
 # FIXME: Add "./tests/unit" back, when the unit tests are written.
 
 [tool.uv]

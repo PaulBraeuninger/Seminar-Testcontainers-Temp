@@ -15,7 +15,6 @@ def test_mailpit_delivery(mailpit_container: DockerContainer) -> None:
         mailpit_container: The isolated Mailpit container provided by the fixture.
 
     """
-    
     # Arrange
     host = mailpit_container.get_container_host_ip()
     smtp_port = int(mailpit_container.get_exposed_port(1025))
