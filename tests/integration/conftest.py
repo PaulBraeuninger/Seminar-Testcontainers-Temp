@@ -1,6 +1,7 @@
 """Shared fixtures for integration tests."""
 
 from collections.abc import Iterator
+from pathlib import Path
 from secrets import token_hex
 
 from pytest import fixture
@@ -47,3 +48,27 @@ def mailpit_container() -> Iterator[DockerContainer]:
     )
     with container as mailpit:
         yield mailpit
+
+
+@fixture(scope="session")
+def keycloak_container() -> Iterator[DockerContainer]:
+    """Provide Keycloak with an isolated test realm and clean up after the session.
+
+    Yields:
+        DockerContainer: The running Keycloak container with imported users and client roles.
+
+    """
+    realm_file = Path(__file__).parent / "resources" / "library-test-realm.json"
+    container = (
+        DockerContainer("quay.io/keycloak/keycloak:26.5.5")
+        .with_exposed_ports(8080)
+        .with_copy_into_container(realm_file, "/opt/keycloak/data/import/library-test-realm.json")
+        .with_command("start-dev --import-realm")
+        .waiting_for(
+            HttpWaitStrategy(8080, "/realms/library-test/.well-known/openid-configuration")
+            .for_status_code(200)
+            .with_startup_timeout(120)
+        )
+    )
+    with container as keycloak:
+        yield keycloak
