@@ -5,6 +5,8 @@ from secrets import token_hex
 
 from pytest import fixture
 from testcontainers.community.postgres import PostgresContainer
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.wait_strategies import CompositeWaitStrategy, HttpWaitStrategy, PortWaitStrategy
 
 
 @fixture(scope="session")
@@ -23,3 +25,25 @@ def postgres_container() -> Iterator[PostgresContainer]:
         driver="psycopg",
     ) as postgres:
         yield postgres
+
+
+@fixture
+def mailpit_container() -> Iterator[DockerContainer]:
+    """Provide an isolated Mailpit instance and clean up the container afterward.
+
+    Yields:
+        DockerContainer: The running Mailpit container with SMTP and HTTP ports available.
+
+    """
+    container = (
+        DockerContainer("axllent/mailpit:v1.29.3")
+        .with_exposed_ports(1025, 8025)
+        .waiting_for(
+            CompositeWaitStrategy(
+                PortWaitStrategy(1025).with_startup_timeout(30),
+                HttpWaitStrategy(8025, "/readyz").for_status_code(200).with_startup_timeout(30),
+            )
+        )
+    )
+    with container as mailpit:
+        yield mailpit
