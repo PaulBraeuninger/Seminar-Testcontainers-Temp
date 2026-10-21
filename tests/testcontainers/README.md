@@ -5,6 +5,21 @@ Docker-Engine fuer Linux-Container. Die Fixtures starten und entfernen die
 Container automatisch; Host-Ports werden dynamisch vergeben.
 
 ```powershell
+uv run testcontainers
+```
+
+Dieser Projektbefehl fuehrt alle Tests unter `tests/testcontainers` aus und gibt
+den Exit-Code von pytest zurueck. Zusaetzliche pytest-Argumente werden durchgereicht:
+
+```powershell
+uv run testcontainers -v
+uv run testcontainers --collect-only
+uv run testcontainers -k keycloak
+```
+
+Der direkte pytest-Aufruf ist ebenfalls moeglich:
+
+```powershell
 uv run pytest tests/testcontainers/keycloak_test.py
 uv run pytest tests/testcontainers
 ```
