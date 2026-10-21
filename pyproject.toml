@@ -63,6 +63,7 @@ dev = [
     "pytest-env>=1.6.0",
     "pytest-html>=4.2.0",
     "pytest-mock>=3.15.1",
+    "testcontainers[postgres]>=4.15.0",
     "werkzeug>=3.1.7",
 ]
 doc = [
