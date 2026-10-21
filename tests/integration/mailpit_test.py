@@ -15,6 +15,8 @@ def test_mailpit_delivery(mailpit_container: DockerContainer) -> None:
         mailpit_container: The isolated Mailpit container provided by the fixture.
 
     """
+    
+    # Arrange
     host = mailpit_container.get_container_host_ip()
     smtp_port = int(mailpit_container.get_exposed_port(1025))
     http_port = int(mailpit_container.get_exposed_port(8025))
@@ -29,9 +31,11 @@ def test_mailpit_delivery(mailpit_container: DockerContainer) -> None:
     message["Subject"] = subject
     message.set_content(body)
 
+    # Act
     with SMTP(host, smtp_port, timeout=10) as smtp:
         refused_recipients = smtp.send_message(message)
 
+    # Assert
     assert refused_recipients == {}
 
     HttpWaitStrategy(8025, "/api/v1/message/latest").for_status_code(200).with_startup_timeout(10).wait_until_ready(
