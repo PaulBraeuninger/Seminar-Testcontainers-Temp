@@ -1,4 +1,4 @@
-"""Shared fixtures for the Testcontainers tests."""
+"""Shared fixtures for the Testcontainers used by pytest."""
 
 from collections.abc import Iterator
 from pathlib import Path
