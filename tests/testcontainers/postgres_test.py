@@ -1,7 +1,10 @@
 """Integration tests for the PostgreSQL test container."""
 
+from pytest import mark
 from sqlalchemy import create_engine, text
 from testcontainers.community.postgres import PostgresContainer
+
+pytestmark = mark.postgres
 
 
 def test_postgres_connection(postgres_container: PostgresContainer) -> None:

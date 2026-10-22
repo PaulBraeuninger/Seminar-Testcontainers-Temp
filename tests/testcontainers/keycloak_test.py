@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from library.security.token_service import TokenService
     from library.service.member_service import MemberService
 
+pytestmark = mark.security
+
 PASSWORD = "test-password"  # noqa: S105 -- Only used in the disposable test realm.
 
 
@@ -87,6 +89,7 @@ def _request(authorization: str | None) -> Request:
     return Request({"type": "http", "headers": headers})
 
 
+@mark.keycloak
 def test_keycloak_discovery(keycloak_client: KeycloakOpenID) -> None:
     """Verify that the imported realm publishes its OpenID Connect endpoints."""
     # Arrange
@@ -101,6 +104,7 @@ def test_keycloak_discovery(keycloak_client: KeycloakOpenID) -> None:
     assert configuration["jwks_uri"] == f"{issuer}/protocol/openid-connect/certs"
 
 
+@mark.keycloak
 @mark.parametrize(("username", "role"), [("admin", "admin"), ("member", "patient")])
 def test_keycloak_login_and_roles(keycloak_client: KeycloakOpenID, username: str, role: str) -> None:
     """Verify login, JWT signatures, user claims, and the assigned client roles."""
@@ -118,6 +122,7 @@ def test_keycloak_login_and_roles(keycloak_client: KeycloakOpenID, username: str
     assert claims["resource_access"]["python-client"]["roles"] == [role]
 
 
+@mark.keycloak
 @mark.parametrize(("username", "password"), [("member", "wrong-password"), ("unknown", PASSWORD)])
 def test_keycloak_rejects_invalid_credentials(keycloak_client: KeycloakOpenID, username: str, password: str) -> None:
     """Verify that wrong passwords and unknown users cannot obtain a token."""
@@ -131,6 +136,7 @@ def test_keycloak_rejects_invalid_credentials(keycloak_client: KeycloakOpenID, u
     assert b"invalid_grant" in error.value.response_body
 
 
+@mark.keycloak
 def test_keycloak_logout(keycloak_client: KeycloakOpenID) -> None:
     """Verify that logout invalidates the session's refresh token using introspection."""
     # Arrange
@@ -145,6 +151,7 @@ def test_keycloak_logout(keycloak_client: KeycloakOpenID) -> None:
     assert keycloak_client.introspect(token["refresh_token"], token_type_hint=hint)["active"] is False
 
 
+@mark.keycloak
 @mark.parametrize("scheme", ["Bearer", "bearer", "BEARER"])
 def test_token_service_reads_bearer_token(container_token_service: TokenService, scheme: str) -> None:
     """Verify request parsing and user mapping with a real signed Keycloak token."""
@@ -170,6 +177,7 @@ def test_token_service_rejects_invalid_authorization_header(token_service: Token
         token_service.get_user_from_request(_request(authorization))
 
 
+@mark.keycloak
 def test_token_service_rejects_tampered_token(container_token_service: TokenService) -> None:
     """Reject changed user and role claims when the original signature is retained."""
     from library.security.exceptions import AuthorizationError
@@ -186,6 +194,7 @@ def test_token_service_rejects_tampered_token(container_token_service: TokenServ
         container_token_service.get_user_from_request(_request(f"Bearer {tampered_token}"))
 
 
+@mark.keycloak
 def test_token_service_rejects_expired_token(container_token_service: TokenService, mocker: MockerFixture) -> None:
     """Reject a genuine signed token after its expiry, including the verifier's clock tolerance."""
     from library.security.exceptions import AuthorizationError
@@ -201,6 +210,7 @@ def test_token_service_rejects_expired_token(container_token_service: TokenServi
     assert isinstance(error.value.__cause__, JWTExpired)
 
 
+@mark.keycloak
 @mark.parametrize(
     ("username", "required_roles", "allowed"),
     [
@@ -235,6 +245,8 @@ def test_role_based_access(
         assert not hasattr(request.state, "current_user")
 
 
+@mark.keycloak
+@mark.member
 @mark.parametrize("username", ["admin", "member"])
 def test_member_access_to_existing_member(
     container_token_service: TokenService, member_service: MemberService, username: str
@@ -249,6 +261,8 @@ def test_member_access_to_existing_member(
     assert member.username == "member"
 
 
+@mark.keycloak
+@mark.member
 def test_member_cannot_read_other_member(
     container_token_service: TokenService, member_service: MemberService, mocker: MockerFixture
 ) -> None:

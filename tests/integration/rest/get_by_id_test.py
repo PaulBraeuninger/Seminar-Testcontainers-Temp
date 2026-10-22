@@ -8,6 +8,8 @@ from constants import CTX, REST_URL
 from httpx import get
 from pytest import mark
 
+pytestmark = mark.member
+
 
 @mark.rest
 @mark.get_request

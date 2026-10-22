@@ -14,7 +14,7 @@ den Exit-Code von pytest zurueck. Zusaetzliche pytest-Argumente werden durchgere
 ```powershell
 uv run testcontainers -v
 uv run testcontainers --collect-only
-uv run testcontainers -k keycloak
+uv run testcontainers -m keycloak
 ```
 
 Der direkte pytest-Aufruf ist ebenfalls moeglich:
@@ -23,6 +23,33 @@ Der direkte pytest-Aufruf ist ebenfalls moeglich:
 uv run pytest tests/testcontainers/keycloak_test.py
 uv run pytest tests/testcontainers
 ```
+
+## Auswahl mit pytest-Markern
+
+Die Marker `postgres`, `keycloak` und `mailpit` kennzeichnen die benoetigten
+Testcontainer. `member` kennzeichnet Tests der Mitgliederverwaltung, `security`
+Tests der Authentifizierung und Zugriffsrechte. Marker koennen kombiniert werden:
+
+```powershell
+uv run testcontainers -m "postgres and not workflow"
+uv run testcontainers -m "keycloak and member"
+uv run testcontainers -m security
+uv run pytest -m member
+```
+
+Die Service-Marker werden nur bei tatsaechlicher Container-Abhaengigkeit gesetzt.
+Die Tests fehlerhafter Authorization-Header tragen deshalb nur `security` und
+laufen ohne Keycloak-Container. Die Mitgliedsrechte-Tests benoetigen Keycloak,
+aber weder PostgreSQL noch Mailpit, weil diese Abhaengigkeiten ersetzt sind.
+
+`workflow` ist fuer kuenftige vollstaendige Geschaeftsablaeufe ueber die API
+registriert; aktuell gibt es noch keine solchen Tests. Diese erhalten zusaetzlich
+alle benoetigten Service-Marker. Die drei CI-Service-Jobs waehlen ihren jeweiligen
+Marker mit `and not workflow`; Tests ohne Container laufen einmal im Keycloak-Job.
+Kuenftige Workflow-Tests benoetigen einen eigenen CI-Job.
+
+Alle Marker sind in `pyproject.toml` registriert. `--strict-markers` verhindert,
+dass Tippfehler in Markern unbemerkt bleiben.
 
 Die Keycloak-Fixture verwendet das oeffentliche Image
 `quay.io/keycloak/keycloak:26.5.5` und importiert

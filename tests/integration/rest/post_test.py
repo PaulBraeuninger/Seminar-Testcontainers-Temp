@@ -10,6 +10,9 @@ from pytest import mark
 token: str | None
 
 
+pytestmark = mark.member
+
+
 @mark.rest
 @mark.post_request
 def test_create_member() -> None:

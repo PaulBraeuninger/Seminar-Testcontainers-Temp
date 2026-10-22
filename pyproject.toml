@@ -90,8 +90,14 @@ lint = [
 minversion = "8.4.1"
 pythonpath = ["src", "tests/integration"]
 testpaths = ["tests/integration", "tests/testcontainers"]
-addopts = "--html=report.html --cov --cov-report=html"
+addopts = "--strict-markers --html=report.html --cov --cov-report=html"
 markers = [
+    "postgres: Benoetigt PostgreSQL im Testcontainer",
+    "keycloak: Benoetigt Keycloak im Testcontainer",
+    "mailpit: Benoetigt Mailpit im Testcontainer",
+    "member: Fachliche Tests der Mitgliederverwaltung",
+    "security: Authentifizierung und Zugriffsrechte",
+    "workflow: Vollstaendiger Geschaeftsablauf ueber die API",
     "rest: REST-Schnittstelle",
     "get_request: GET-Requests",
     "post_request: POST-Requests",

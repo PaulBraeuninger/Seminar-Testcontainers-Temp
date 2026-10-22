@@ -7,6 +7,8 @@ from constants import CTX, GRAPHQL_URL
 from httpx import post
 from pytest import mark
 
+pytestmark = mark.member
+
 
 @mark.graphql
 @mark.mutation

@@ -56,5 +56,14 @@ jobs:
       - name: Run tests
         run: >-
           uv run --locked pytest
-          tests/testcontainers/${{ matrix.service }}_test.py
+          tests/testcontainers
+          -m "${{ matrix.service }} and not workflow"
+          -v
+
+      - name: Run tests without containers
+        if: matrix.service == 'keycloak'
+        run: >-
+          uv run --locked pytest
+          tests/testcontainers
+          -m "not (postgres or keycloak or mailpit or workflow)"
           -v

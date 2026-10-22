@@ -4,8 +4,11 @@ from email.message import EmailMessage
 from smtplib import SMTP
 
 from httpx import Client
+from pytest import mark
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import HttpWaitStrategy
+
+pytestmark = mark.mailpit
 
 
 def test_mailpit_delivery(mailpit_container: DockerContainer) -> None:
