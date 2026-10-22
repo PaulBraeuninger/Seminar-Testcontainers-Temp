@@ -28,5 +28,33 @@ jobs:
       - name: Analyze code with ty
         run: uv run ty check src tests/integration tests/testcontainers
 
-      # - name: Test code with pytest
-      #   run: uv run pytest tests
+  testcontainers:
+    name: Testcontainers – ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [keycloak, mailpit, postgres]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ vars.UV_VERSION }}
+
+      - name: Install Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync --locked --all-groups
+
+      - name: Run tests
+        run: >-
+          uv run --locked pytest
+          tests/testcontainers/${{ matrix.service }}_test.py
+          -v
